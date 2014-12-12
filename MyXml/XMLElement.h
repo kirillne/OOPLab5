@@ -2,8 +2,7 @@
 #include "XMLNode.h"
 #include "Utils.h"
 #include "XMLAttribute.h"
-class XMLElement :
-	public XMLNode
+class XMLElement : public XMLNode
 {
 public:
 	virtual std::string ToStirng();// override;

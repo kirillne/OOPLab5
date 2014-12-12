@@ -84,6 +84,7 @@
     <ClInclude Include="XMLCData.h" />
     <ClInclude Include="XMLComment.h" />
     <ClInclude Include="XMLElement.h" />
+    <ClInclude Include="XMLInstruction.h" />
     <ClInclude Include="XMLNode.h" />
     <ClInclude Include="XMLSimpleNode.h" />
     <ClInclude Include="XMLText.h" />
@@ -97,6 +98,7 @@
     <ClCompile Include="XMLCData.cpp" />
     <ClCompile Include="XMLComment.cpp" />
     <ClCompile Include="XMLElement.cpp" />
+    <ClCompile Include="XMLInstruction.cpp" />
     <ClCompile Include="XMLNode.cpp" />
     <ClCompile Include="XMLSimpleNode.cpp" />
     <ClCompile Include="XMLText.cpp" />
