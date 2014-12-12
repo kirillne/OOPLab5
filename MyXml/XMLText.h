@@ -1,12 +1,8 @@
 #pragma once
-#include "XMLNode.h"
-class XMLText : public XMLNode
+#include "XMLSimpleNode.h"
+class XMLText : public XMLSimpleNode
 {
-public:
-	const char* Value();
-	void SetValue(const char* value);
+public:	
 	virtual std::string ToStirng();
-private:
-	std::string m_Value;
 };
 
