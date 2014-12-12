@@ -82,6 +82,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="XMLAttribute.h" />
     <ClInclude Include="XMLNode.h" />
+    <ClInclude Include="XMLText.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -90,6 +91,7 @@
     </ClCompile>
     <ClCompile Include="XMLAttribute.cpp" />
     <ClCompile Include="XMLNode.cpp" />
+    <ClCompile Include="XMLText.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
