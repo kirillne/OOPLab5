@@ -2,12 +2,12 @@
 #include "XMLSimpleNode.h"
 
 
-const char* XMLText::Value()
+const char* XMLSimpleNode::Value()
 {
 	return m_Value.c_str();
 }
 
-void XMLText::SetValue(const char* value)
+void XMLSimpleNode::SetValue(const char* value)
 {
 	if (value != NULL)
 		m_Value = value;

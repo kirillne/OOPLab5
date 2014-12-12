@@ -40,9 +40,15 @@ void XMLInstruction::SetEncoding(const char* value)
 		m_Encoding.clear();
 }
 
-std::string XMLInstruction::ToString()
+
+std::string XMLInstruction::ToStirng()
 {
-	return "<?xml " + (m_Version == "" ? "" : "version=\""+ m_Version + "\" ") + 
+	return "<?xml " + (m_Version == "" ? "" : "version=\"" + m_Version + "\" ") +
 		(m_Encoding == "" ? "" : "encoding=\"" + m_Encoding + "\" ") +
-		(m_Standalone == "" ? "" : "standalone=\"" + m_Standalone + "\" ") +
+		(m_Standalone == "" ? "" : "standalone=\"" + m_Standalone + "\" ") + "?>";
+}
+
+std::string XMLInstruction::GetObjectString()
+{
+	return "XMLInstruction: " + m_Version + " " + m_Encoding + " " + m_Standalone;
 }

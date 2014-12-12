@@ -25,7 +25,13 @@ std::string XMLElement::GetChildrensString()
 			XMLNode* item = as<XMLNode*>(m_Children->Item(i));
 			result += item->ToStirng() + "\r\n";
 		}
-	}	return result;
+	}	
+	for (size_t i = 0; i < result.size()-1; ++i)
+	{
+		if (result.at(i) == '\n')
+			result.insert(i+1,3,' ');
+	}
+	return "   " + result;
 }
 
 
@@ -44,10 +50,19 @@ std::string XMLElement::GetAtributesString()
 
 std::string XMLElement::ToStirng()
 {
-	std::string result = "< " + m_Name + " ";
-	result += GetAtributesString() + ">\r\n";
+	std::string result = "";
+
+	if (m_Name != "")
+	{
+
+		result += "< " + m_Name + " ";
+		result += GetAtributesString() + ">\r\n";
+	}
 	result += GetChildrensString();
-	result += "</" + m_Name + ">";
+	if (m_Name != "")
+	{
+		result += "</" + m_Name + ">";
+	}
 	return result;
 }
 
@@ -91,7 +106,10 @@ void XMLElement::RemoveChild(XMLNode* value)
 		m_Children->Remove(value);
 		value->Destroy();
 	}
-	throw Sys::CreateArgumentOutOfRangeException();
+	else
+	{
+		throw Sys::CreateArgumentOutOfRangeException();
+	}
 }
 
 void XMLElement::RemoveChildAt(int index)
@@ -102,5 +120,13 @@ void XMLElement::RemoveChildAt(int index)
 		m_Children->RemoveAt(index);
 		removed->Destroy();
 	}
-	throw Sys::CreateIndexOutOfBoundsException(index);
+	else
+	{
+		throw Sys::CreateIndexOutOfBoundsException(index);
+	}
+}
+
+std::string XMLElement::GetObjectString()
+{
+	return "XMLElement: " + m_Name;
 }

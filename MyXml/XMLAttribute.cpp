@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "XMLAttribute.h"
-
+#include <string>
 
 
 const char* XMLAttribute::Name()
@@ -29,7 +29,14 @@ void XMLAttribute::SetValue(const char* value)
 		m_Value.clear();
 }
 
-std::string XMLAttribute::ToString()
+
+std::string XMLAttribute::ToStirng()
 {
-	return m_Name + "=" + m_Value;
+	return m_Name + "=\"" + m_Value + "\"";
 }
+
+std::string XMLAttribute::GetObjectString()
+{
+	return "XMLAttribute: " + m_Name + " = " + m_Value;
+}
+

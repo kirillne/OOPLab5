@@ -14,6 +14,8 @@ public:
 	void AddChild(XMLNode* value);
 	void RemoveChild(XMLNode* value);
 	void RemoveChildAt(int index);
+
+	virtual std::string GetObjectString();
 protected:
 	virtual void Initialize(Object* owner);// override;
 	virtual void Finalize();// override;

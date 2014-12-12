@@ -14,9 +14,9 @@ void XMLNode::Finalize()
 
 XMLNode* XMLNode::Parent()
 {
-	XMLNode* parent = as<XMLNode*>(Owner());
-	if (parent != NULL)
-		return parent;
+	Sys::Collection* collection = as<Sys::Collection*>(Owner());
+	if (collection != NULL)
+		return cast<XMLNode*>(collection->Owner());
 	else
 		return NULL;
 }

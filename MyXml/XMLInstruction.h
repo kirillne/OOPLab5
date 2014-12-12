@@ -10,7 +10,11 @@ public:
 	const char* Encoding();
 	void SetEncoding(const char* value);
 
-	virtual std::string ToString();
+	//virtual std::string ToString();
+
+	virtual std::string ToStirng();//override;
+	virtual std::string GetObjectString();
+
 private:
 	std::string m_Version;
 	std::string m_Encoding;
