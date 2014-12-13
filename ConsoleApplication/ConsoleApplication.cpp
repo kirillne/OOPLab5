@@ -10,6 +10,8 @@
 #include "XMLCData.h"
 #include "XMLAttribute.h"
 #include "XMLInstruction.h"
+#include "XMLSimpleNode.h"
+
 
 XMLElement* GetDoc()
 {
@@ -86,8 +88,15 @@ void PrintHelp()
 		<< "reset - Сброс на корневой уровень" << std::endl
 		<< "levelUp - Перейти на уровень выше" << std::endl
 		<< "delete - Удалить текущий элемент" << std::endl
+		<< "chgValue - Изменить значение теущего элемента (Для XMLComment, XMLText, XMLCData)" << std::endl
+		<< "chgAtrValue - Изменить значение теущего элемента (Для XMLAttribute)" << std::endl
+		<< "chgAtrName - Изменить имя теущего элемента (Для XMLAttribute)" << std::endl
+		<< "chgElName - Изменить имя теущего элемента (Для XMLElement)" << std::endl
+		<< "chgInstract - Изменить значение XMLInstraction" << std::endl
+		<< "help - Вывод справки" << std::endl
 		<< "help - Вывод справки" << std::endl
 		<< "exit - Выход" << std::endl;
+
 	//save
 	//Change value
 	//Change name
@@ -115,6 +124,162 @@ XMLNode* SelectSubLevel(XMLElement* currentLevel)
 	return currentLevel->GetChild(selected);
 }
 
+void ChangeElementName(XMLNode* currentLevel)
+{
+	if (is<XMLElement*>(currentLevel))
+	{
+		std::cout << "Новое значение: ";
+		std::string newValue = "";
+		std::cin >> newValue;
+		as<XMLElement*>(currentLevel)->SetName(newValue.c_str());
+		std::cout << "Название изменено" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий элемент не является XMLElement" << std::endl;
+	}
+}
+
+XMLNode* LevelUp(XMLNode* currentLevel)
+{
+	if (currentLevel->Parent() != NULL)
+	{
+		currentLevel = as<XMLNode*>(currentLevel->Parent());
+		std::cout << "Текущий элемент изменён" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий уровень не является вложенным" << std::endl;
+	}	return currentLevel;
+}
+
+XMLNode* Select(XMLNode* currentLevel)
+{
+	if (is<XMLElement*>(currentLevel))
+	{
+		currentLevel = SelectSubLevel(as<XMLElement*>(currentLevel));
+		std::cout << "Текущий элемент изменён" << std::endl;
+	}
+	else
+	{
+		std::cout << "Команду можно выполнить только для XMLElement" << std::endl;
+	}
+	return currentLevel;
+}
+
+XMLNode* Delete(XMLNode* currentLevel)
+{
+	if (currentLevel->Parent() != NULL)
+	{
+		XMLElement* newLevel = as<XMLElement*>(currentLevel->Parent());
+		newLevel->RemoveChild(currentLevel);
+		currentLevel = newLevel;
+		std::cout << "Текущий элемент удалён" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий уровень не является вложенным. Его невозможно удалить" << std::endl;
+	}	
+	return currentLevel;
+}
+
+void ChangeAttrValue(XMLNode* currentLevel)
+{
+	if (is<XMLAttribute*>(currentLevel))
+	{
+		std::cout << "Новое значение: ";
+		std::string newValue = "";
+		std::cin >> newValue;
+		as<XMLAttribute*>(currentLevel)->SetValue(newValue.c_str());
+		std::cout << "Значени изменено" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий элемент не является аттрибутом" << std::endl;
+	}
+}
+
+void ChangeAttrName(XMLNode* currentLevel)
+{
+	if (is<XMLAttribute*>(currentLevel))
+	{
+		std::cout << "Новое значение: ";
+		std::string newValue = "";
+		std::cin >> newValue;
+		as<XMLAttribute*>(currentLevel)->SetName(newValue.c_str());
+		std::cout << "Название изменено" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий элемент не является аттрибутом" << std::endl;
+	}
+}
+
+void ChangeTextValue(XMLNode* currentLevel)
+{
+	if (is<XMLSimpleNode*>(currentLevel))
+	{
+		std::cout << "Новое значение: ";
+		std::string newValue = "";
+		std::cin >> newValue;
+		as<XMLSimpleNode*>(currentLevel)->SetValue(newValue.c_str());
+		std::cout << "Значени изменено" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий элемент не имеет текстового содержимого" << std::endl;
+	}
+}
+
+void ChangeInstraction(XMLNode* currentLevel)
+{
+	if (is<XMLInstruction*>(currentLevel))
+	{
+		std::string newValue = "";
+		XMLInstruction* instraction = as<XMLInstruction*>(currentLevel);
+		std::cout << "Текущее значение: " << instraction->GetObjectString() << std::endl;
+
+		std::cout << "Что будет изменено: " << std::endl
+			<< "0 - Version" << std::endl
+			<< "1 - Encoding" << std::endl
+			<< "2 - Standalone" << std::endl;
+		int command = -1;
+		std::cout << "Комманда: ";
+		try
+		{
+			std::cin >> command;
+			if (command < 0 || command > 2) throw;
+		}
+		catch (...)
+		{
+			std::cout << "Неверная команда";
+			return;
+		}
+
+		std::cout << "Новое значение: ";
+
+		std::cin >> newValue;
+
+		switch (command)
+		{
+		case 0:
+			instraction->SetVersion(newValue.c_str());
+			break;
+		case 1:
+			instraction->SetEncoding(newValue.c_str());
+			break;
+		case 2:
+			instraction->SetStandalone(newValue.c_str());
+			break;
+		}
+		std::cout << "Значение изменено" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий элемент не является инструкцией" << std::endl;
+	}
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	setlocale(LC_ALL, ".1251");
@@ -132,15 +297,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		else if (command == "select")
 		{
-			if (is<XMLElement*>(currentLevel))
-			{
-				currentLevel = SelectSubLevel(as<XMLElement*>(currentLevel));
-				std::cout << "Текущий элемент изменён" << std::endl;
-			}
-			else
-			{
-				std::cout << "Команду можно выполнить только для XMLElement" << std::endl;
-			}
+			currentLevel = Select(currentLevel);
 		}
 		else if (command == "reset")
 		{
@@ -149,33 +306,35 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		else if (command == "levelUp")
 		{
-			if (currentLevel->Parent() != NULL)
-			{
-				currentLevel = as<XMLNode*>(currentLevel->Parent());
-				std::cout << "Текущий элемент изменён" << std::endl;
-			}
-			else
-			{
-				std::cout << "Текущий уровень не является вложенным" << std::endl;
-			}
+			currentLevel = LevelUp(currentLevel);
 		}
 		else if (command == "delete")
 		{
-			if (currentLevel->Parent() != NULL)
-			{
-				XMLElement* newLevel = as<XMLElement*>(currentLevel->Parent());
-				newLevel->RemoveChild(currentLevel);
-				currentLevel = newLevel;
-				std::cout << "Текущий элемент удалён" << std::endl;
-			}
-			else
-			{
-				std::cout << "Текущий уровень не является вложенным. Его невозможно удалить" << std::endl;
-			}
+			currentLevel = Delete(currentLevel);
 		}
 		else if (command == "help")
 		{
 			PrintHelp();
+		}
+		else if (command == "chgAtrValue")
+		{
+			ChangeAttrValue(currentLevel);
+		}
+		else if (command == "chgAtrName")
+		{
+			ChangeAttrName(currentLevel);
+		}
+		else if (command == "chgElName")
+		{
+			ChangeElementName(currentLevel);
+		}
+		else if (command == "chgValue")
+		{
+			ChangeTextValue(currentLevel);
+		}
+		else if (command == "chgInstract")
+		{
+			ChangeInstraction(currentLevel);
 		}
 		else if (command == "exit")
 		{
