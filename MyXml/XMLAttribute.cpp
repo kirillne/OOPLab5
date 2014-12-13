@@ -40,3 +40,19 @@ std::string XMLAttribute::GetObjectString()
 	return "XMLAttribute: " + m_Name + " = " + m_Value;
 }
 
+
+
+XMLAttribute* XMLAttribute::FromString( char* &content, XMLNode* owner)
+{
+	XMLAttribute* result = Sys::Create<XMLAttribute>(owner);
+	content = XMLNode::TrimStart(content);
+	char value[255];
+	GetContent(value, content, '=');
+	result->SetName(value);
+	content += 2;
+	GetContent(value, content, '"');
+	result->SetValue(value);
+	content += 1;
+	return result;
+}
+

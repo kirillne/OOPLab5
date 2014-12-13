@@ -52,3 +52,41 @@ std::string XMLInstruction::GetObjectString()
 {
 	return "XMLInstruction: " + m_Version + " " + m_Encoding + " " + m_Standalone;
 }
+
+
+XMLInstruction* XMLInstruction::FromString(char* &content, XMLNode* owner)
+{
+	XMLInstruction* result = Sys::Create<XMLInstruction>(owner);
+	content += 5;
+	char value[255];
+	int i = 0;
+	std::string temp;
+	while (true)
+	{
+		content = XMLNode::TrimStart(content);
+		if (!strncmp(content, "version", 7))
+		{
+			content += 9;
+			GetContent(value, content,'"');
+			result->SetVersion(value);
+		}
+		else if (!strncmp(content, "encoding", 8))
+		{
+			content += 10;
+			GetContent(value,content, '"');
+			result->SetEncoding(value);
+		}
+		else if (!strncmp(content, "standalone", 10))
+		{
+			content += 12;
+			GetContent(value, content,'"');
+			result->SetStandalone(value);
+		}
+		else
+		{
+			break;
+		}
+	}
+	content += 2;
+	return result;
+}

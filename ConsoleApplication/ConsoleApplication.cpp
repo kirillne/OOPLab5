@@ -11,6 +11,7 @@
 #include "XMLAttribute.h"
 #include "XMLInstruction.h"
 #include "XMLSimpleNode.h"
+#include <fstream>
 
 
 XMLElement* GetDoc()
@@ -93,7 +94,9 @@ void PrintHelp()
 		<< "chgAtrName - Изменить имя теущего элемента (Для XMLAttribute)" << std::endl
 		<< "chgElName - Изменить имя теущего элемента (Для XMLElement)" << std::endl
 		<< "chgInstract - Изменить значение XMLInstraction" << std::endl
-		<< "help - Вывод справки" << std::endl
+		<< "add - Добавить новый элемент на текущий уровень (Для XMLElement)" << std::endl
+		<< "save - Сохранить" << std::endl
+		<< "open - Открыть" << std::endl
 		<< "help - Вывод справки" << std::endl
 		<< "exit - Выход" << std::endl;
 
@@ -102,6 +105,33 @@ void PrintHelp()
 	//Change name
 	//Change ... for instruction
 	//open??
+}
+
+XMLElement* GetOpen()
+{
+	std::ifstream file("in.xml");
+	std::string allStrings;
+	while (!file.eof())
+	{
+		std::string oneString;
+		file >> oneString;
+		allStrings += oneString + " ";
+	}
+
+	XMLElement* doc = Sys::Create<XMLElement>(NULL);
+	doc->SetName(NULL);
+
+	char* content = const_cast<char*>( allStrings.c_str());
+
+
+	while (content[0]!= '\0') 
+	{
+		XMLNode* node = XMLNode::FromString(content, doc);
+		doc->AddChild(node);
+		content = XMLNode::TrimStart(content);
+	}
+	return doc;
+	
 }
 
 void PrintSubLevel(XMLElement* currentLevel)
@@ -120,7 +150,8 @@ XMLNode* SelectSubLevel(XMLElement* currentLevel)
 	do{
 		std::cout << std::endl << "Номер элемента: ";
 		std::cin >> selected;
-	} while (selected < 0 || selected >= currentLevel->ChildrenCount());
+	} while (selected < -1 || selected >= currentLevel->ChildrenCount());
+	if (selected == -1) return NULL;
 	return currentLevel->GetChild(selected);
 }
 
@@ -157,7 +188,10 @@ XMLNode* Select(XMLNode* currentLevel)
 {
 	if (is<XMLElement*>(currentLevel))
 	{
-		currentLevel = SelectSubLevel(as<XMLElement*>(currentLevel));
+		XMLNode* subLevel = SelectSubLevel(as<XMLElement*>(currentLevel));
+		if (subLevel == NULL) return currentLevel;
+		currentLevel = subLevel;
+		
 		std::cout << "Текущий элемент изменён" << std::endl;
 	}
 	else
@@ -280,6 +314,64 @@ void ChangeInstraction(XMLNode* currentLevel)
 	}
 }
 
+XMLNode* Add(XMLNode* currentLevel)
+{
+	if (is<XMLElement*>(currentLevel))
+	{
+		XMLElement* element = as<XMLElement*>(currentLevel);
+		
+		std::cout << "Тип добавляемого элемента: " << std::endl
+			<< "0 - XMLAttribute" << std::endl
+			<< "1 - XMLCData" << std::endl
+			<< "2 - XMLComment" << std::endl
+			<< "3 - XMLElement" << std::endl
+			<< "4 - XMLInstruction" << std::endl
+			<< "5 - XMLText" << std::endl;
+		int command = -1;
+		std::cout << "Комманда: ";
+		try
+		{
+			std::cin >> command;
+			if (command < 0 || command > 6) throw;
+		}
+		catch (...)
+		{
+			std::cout << "Неверная команда";
+			return currentLevel;
+		}
+		XMLNode* newEl = NULL;
+		switch (command)
+		{
+		case 0:
+			newEl = Sys::Create<XMLAttribute>(currentLevel);
+			break;
+		case 1:
+			newEl = Sys::Create<XMLCData>(currentLevel);
+			break;
+		case 2:
+			newEl = Sys::Create<XMLComment>(currentLevel);
+			break;
+		case 3:
+			newEl = Sys::Create<XMLElement>(currentLevel);
+			break;
+		case 4:
+			newEl = Sys::Create<XMLInstruction>(currentLevel);
+			break;
+		case 5:
+			newEl = Sys::Create<XMLText>(currentLevel);
+			break;
+		}
+		element->AddChild(newEl);
+		currentLevel = newEl;
+
+		std::cout << "Узел добавлен и выбран в качестве текущего" << std::endl;
+	}
+	else
+	{
+		std::cout << "Текущий элемент не является XMLElement" << std::endl;
+	}
+	return currentLevel;
+}
 int _tmain(int argc, _TCHAR* argv[])
 {
 	setlocale(LC_ALL, ".1251");
@@ -335,6 +427,22 @@ int _tmain(int argc, _TCHAR* argv[])
 		else if (command == "chgInstract")
 		{
 			ChangeInstraction(currentLevel);
+		}
+		else if (command == "add")
+		{
+			currentLevel = Add(currentLevel);
+		}
+		else if (command == "open")
+		{
+			doc = GetOpen();
+			currentLevel = doc;
+			std::cout << "Загружено" << std::endl;
+		}
+		else if (command == "save")
+		{
+			std::ofstream file("out.xml");
+			file << doc->ToStirng();
+			std::cout << "Сохранено" << std::endl;
 		}
 		else if (command == "exit")
 		{

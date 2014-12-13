@@ -16,6 +16,7 @@ public:
 	void RemoveChildAt(int index);
 
 	virtual std::string GetObjectString();
+	static XMLElement* FromString(char* &content, XMLNode* owner);
 protected:
 	virtual void Initialize(Object* owner);// override;
 	virtual void Finalize();// override;

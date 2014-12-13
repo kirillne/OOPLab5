@@ -14,6 +14,7 @@ public:
 
 	virtual std::string ToStirng() override;
 	virtual std::string GetObjectString();
+	static XMLAttribute* FromString( char* &conent, XMLNode* owner);
 private:
 	std::string m_Name;
 	std::string m_Value;

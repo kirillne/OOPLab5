@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "XMLElement.h"
+#include "XMLAttribute.h"
 
 
 
@@ -129,4 +130,44 @@ void XMLElement::RemoveChildAt(int index)
 std::string XMLElement::GetObjectString()
 {
 	return "XMLElement: " + m_Name;
+}
+
+XMLElement* XMLElement::FromString( char* &content, XMLNode* owner)
+{
+	XMLElement* result = Sys::Create<XMLElement>(owner);
+	content = XMLNode::TrimStart(content);
+	content++;
+	content = XMLNode::TrimStart(content);
+	char value[255];
+	GetContent(value, content, ' ');
+	result->SetName(value);
+
+	content = XMLNode::TrimStart(content);
+	while (content[0] != '>')
+	{
+		XMLAttribute* attribute = XMLAttribute::FromString(content,result);
+		result->AddChild(attribute);
+		content = XMLNode::TrimStart(content);
+	}
+	content++;
+
+	content = XMLNode::TrimStart(content);
+
+	while (content[0] != '<' || content[1] != '/')
+	{
+		XMLNode* child = XMLNode::FromString(content, result);
+		result->AddChild(child);
+		content = XMLNode::TrimStart(content);
+
+	}
+
+	content += 2; // </
+	content = XMLNode::TrimStart(content);
+	content += strlen(value); //name
+	content = XMLNode::TrimStart(content);
+
+	content += 1; //>
+	content = XMLNode::TrimStart(content);
+
+	return result;
 }
